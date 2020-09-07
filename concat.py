@@ -4,7 +4,7 @@ def concat(*text, **kwargs):
 
     Args:
         *text: multiple input
-        **kwargs: separator input
+        **kwargs=separator: separator input
 
     Returns:
         str : concatenated text
