@@ -1,26 +1,27 @@
 
-def concat(*text, **kwargs):
+def concat(*args, **kwargs):
     """
 
+    Safe string concatenation. Do not accept None for the moment.
+
     Args:
-        *text: multiple input
-        **kwargs=separator: separator input
+        *args: multiple input except None
+        **kwargs=separator: only accept separator input
 
     Returns:
         str : concatenated text
 
     """
-    try:
-        if len(kwargs) == 0:
-            return "".join(text)
-        elif len(kwargs)==1:
-            return str(kwargs["separator"]).join(text)
-        else:
-            raise RuntimeError("kwargs only accept one key word")
-    except KeyError:
-        print("Key word incorrect. Use separator instead")
+    separator = kwargs.get("separator", "")
+
+    str_args = [str(arg) for arg in args]
+    concat_str = separator.join(str_args)
+
+    return concat_str
 
 
 if __name__ == '__main__':
 
-    print(concat("un", "deux", "trois", test="/"))
+    txt = concat("un", "deux", "trois", separator="_")
+
+    print(txt)
