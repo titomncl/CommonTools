@@ -18,10 +18,3 @@ def concat(*args, **kwargs):
     concat_str = separator.join(str_args)
 
     return concat_str
-
-
-if __name__ == '__main__':
-
-    txt = concat("un", "deux", "trois", separator="_")
-
-    print(txt)
