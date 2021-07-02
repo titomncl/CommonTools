@@ -41,9 +41,7 @@ class Controller(object):
 
         self.msg_box = self.ui.message_box("Save",
                                            "The file will be save.",
-                                           "Do you want to continue?",
-                                           "Save",
-                                           "Cancel")
+                                           "Do you want to continue?")
 
         self.init_btn_connections()
 

@@ -201,7 +201,7 @@ class UI(Qw.QWidget):
 
         self.close_btn.clicked.connect(self.close)
 
-    def message_box(self, title, text, informative_text, accept_btn_label, reject_btn_label):
+    def message_box(self, title, text, informative_text):
 
         msg_box = Qw.QMessageBox(self)
         msg_box.setWindowTitle(title)
