@@ -210,4 +210,6 @@ class UI(Qw.QWidget):
         msg_box.setStandardButtons(Qw.QMessageBox.Ok | Qw.QMessageBox.Cancel)
         msg_box.setDefaultButton(Qw.QMessageBox.Ok)
 
-        return msg_box
+        choice = msg_box.exec_()
+
+        return choice, Qw.QMessageBox.Ok

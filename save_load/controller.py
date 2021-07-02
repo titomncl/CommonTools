@@ -39,10 +39,6 @@ class Controller(object):
         self.shd_btn.setChecked(False)
         self.rig_btn.setChecked(False)
 
-        self.msg_box = self.ui.message_box("Save",
-                                           "The file will be save.",
-                                           "Do you want to continue?")
-
         self.init_btn_connections()
 
         self.incremental_save()
@@ -55,8 +51,10 @@ class Controller(object):
             self.show()
 
     def first_save(self):
-        choice = self.msg_box.exec_()
-        if choice == self.msg_box.AcceptRole:
+        choice, ok_btn = self.ui.message_box("Save",
+                                             "The file will be save.",
+                                             "Do you want to continue?")
+        if choice == ok_btn:
             self.core.first_save(self.asset_type, self.asset_name, self.dpt)
 
     def show(self):
