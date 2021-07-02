@@ -5,16 +5,15 @@ from Odin.source.core import assets, sets, fx
 
 class Controller(object):
 
-    def __init__(self, core, title):
+    def __init__(self, save_load, title, ui_instance, root, project):
 
-        self.core = core
-        self.ui = UI(self, title, self.core.ui_instance)
+        self.save_load = save_load
+        self.ui = UI(self, title, ui_instance)
 
-        self.ui.accept_btn.setText("Save")
+        self.ui.accept_btn.setText(title)
 
-        self.filepath = self.core.filepath
-        self.root = self.core.root
-        self.project = self.core.project
+        self.root = root
+        self.project = project
 
         self.asset_type = "CHARA"
         self.dpt = "MOD"
@@ -39,23 +38,14 @@ class Controller(object):
         self.shd_btn.setChecked(False)
         self.rig_btn.setChecked(False)
 
+        self.get_assets()
+
         self.init_btn_connections()
 
-        self.incremental_save()
+        self.show()
 
-    def incremental_save(self):
-        if self.filepath:
-            self.core.save()
-        else:
-            self.get_assets()
-            self.show()
-
-    def first_save(self):
-        choice, ok_btn = self.ui.message_box("Save",
-                                             "The file will be save.",
-                                             "Do you want to continue?")
-        if choice == ok_btn:
-            self.core.first_save(self.asset_type, self.asset_name, self.dpt)
+    def save_load_action(self):
+        self.save_load(self.asset_type, self.asset_name, self.dpt)
 
     def show(self):
         self.ui.show()
@@ -69,7 +59,7 @@ class Controller(object):
         self.shd_btn.clicked.connect(self.shd_action)
         self.rig_btn.clicked.connect(self.rig_action)
 
-        self.accept_btn.clicked.connect(self.first_save)
+        self.accept_btn.clicked.connect(self.save_load_action)
 
     def chara_action(self):
         self.asset_type = "CHARA"
