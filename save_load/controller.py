@@ -58,7 +58,6 @@ class Controller(object):
 
     def first_save(self):
         choice = self.msg_box.exec_()
-        print(self.msg_box.accepted(), 123)
         if choice == self.msg_box.AcceptRole:
             self.core.first_save(self.asset_type, self.asset_name, self.dpt)
 
