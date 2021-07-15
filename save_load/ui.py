@@ -1,9 +1,9 @@
-from PySide2 import QtWidgets as Qw
-from PySide2 import QtCore as Qc
+from qtpy import QtWidgets as Qw
+from qtpy import QtCore as Qc
 
 
 class UI(Qw.QWidget):
-    def __init__(self, controller, title, parent=None):
+    def __init__(self, controller, title, buttons, parent=None):
         """
 
         Args:
@@ -13,12 +13,15 @@ class UI(Qw.QWidget):
 
         Qw.QWidget.__init__(self, parent)
 
+        self.setAttribute(Qc.Qt.WidgetAttribute.WA_QuitOnClose)
+
         self.setParent(parent)
         self.setWindowFlags(Qc.Qt.Tool)
 
         self.setWindowTitle(title)
 
         self.controller = controller
+        self.buttons = buttons
 
         self.set_ui()
         self.init_connections()
@@ -34,7 +37,7 @@ class UI(Qw.QWidget):
         main_layout.addSpacerItem(Qw.QSpacerItem(200, 4))
         main_layout.addLayout(self.library_layout())
         main_layout.addSpacerItem(Qw.QSpacerItem(200, 4))
-        main_layout.addLayout(self.department_layout())
+        main_layout.addLayout(self.buttons_layout())
         main_layout.addSpacerItem(Qw.QSpacerItem(200, 20))
         main_layout.addLayout(self.accept_close_layout())
 
@@ -75,25 +78,12 @@ class UI(Qw.QWidget):
 
         return v_layout
 
-    def department_layout(self):
+    def department_layout(self, btns):
 
         h_layout = Qw.QHBoxLayout()
 
-        self.mod_btn = Qw.QPushButton("MOD")
-        self.mod_btn.setCheckable(True)
-        self.mod_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
-
-        self.shd_btn = Qw.QPushButton("SHD")
-        self.shd_btn.setCheckable(True)
-        self.shd_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
-
-        self.rig_btn = Qw.QPushButton("RIG")
-        self.rig_btn.setCheckable(True)
-        self.rig_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
-
-        h_layout.addWidget(self.mod_btn)
-        h_layout.addWidget(self.shd_btn)
-        h_layout.addWidget(self.rig_btn)
+        for btn in btns:
+            h_layout.addWidget(btn)
 
         v_layout = Qw.QVBoxLayout()
 
@@ -103,6 +93,31 @@ class UI(Qw.QWidget):
         v_layout.addLayout(h_layout)
 
         return v_layout
+
+    def buttons_layout(self):
+        self.btns = list()
+        for title in self.buttons:
+            btn = self.dpt_btn(title, True)
+            self.btns.append(btn)
+
+        self.btns[0].setChecked(True)
+
+        return self.department_layout(self.btns)
+
+    def dpt_btn(self, title, is_checkable=False):
+        dpt_btn = Qw.QPushButton(title)
+        dpt_btn.setCheckable(is_checkable)
+        dpt_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
+        dpt_btn.clicked.connect(self.dpt_btn_action)
+
+        return dpt_btn
+
+    def dpt_btn_action(self):
+        self.controller.dpt = self.sender().text()
+
+        for btn in self.btns:
+            if btn != self.sender():
+                btn.setChecked(False)
 
     def library_layout(self):
 
@@ -141,9 +156,8 @@ class UI(Qw.QWidget):
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
 
-        self.mod_btn.setEnabled(True)
-        self.shd_btn.setEnabled(True)
-        self.rig_btn.setEnabled(True)
+        for btn in self.btns:
+            btn.setEnabled(self.buttons[btn.text()]["CHARA"])
 
     def props_action(self):
         self.props_btn.setChecked(True)
@@ -151,9 +165,8 @@ class UI(Qw.QWidget):
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
 
-        self.mod_btn.setEnabled(True)
-        self.shd_btn.setEnabled(True)
-        self.rig_btn.setEnabled(True)
+        for btn in self.btns:
+            btn.setEnabled(self.buttons[btn.text()]["PROPS"])
 
     def set_action(self):
         self.set_btn.setChecked(True)
@@ -161,9 +174,8 @@ class UI(Qw.QWidget):
         self.props_btn.setChecked(False)
         self.fx_btn.setChecked(False)
 
-        self.mod_btn.setEnabled(True)
-        self.shd_btn.setEnabled(True)
-        self.rig_btn.setEnabled(False)
+        for btn in self.btns:
+            btn.setEnabled(self.buttons[btn.text()]["SET"])
 
     def fx_action(self):
         self.fx_btn.setChecked(True)
@@ -171,33 +183,14 @@ class UI(Qw.QWidget):
         self.chara_btn.setChecked(False)
         self.props_btn.setChecked(False)
 
-        self.mod_btn.setEnabled(False)
-        self.shd_btn.setEnabled(False)
-        self.rig_btn.setEnabled(False)
-
-    def mod_action(self):
-        self.mod_btn.setChecked(True)
-        self.shd_btn.setChecked(False)
-        self.rig_btn.setChecked(False)
-
-    def shd_action(self):
-        self.mod_btn.setChecked(False)
-        self.shd_btn.setChecked(True)
-        self.rig_btn.setChecked(False)
-
-    def rig_action(self):
-        self.mod_btn.setChecked(False)
-        self.shd_btn.setChecked(False)
-        self.rig_btn.setChecked(True)
+        for btn in self.btns:
+            btn.setEnabled(self.buttons[btn.text()]["FX"])
 
     def init_connections(self):
         self.chara_btn.clicked.connect(self.chara_action)
         self.props_btn.clicked.connect(self.props_action)
         self.set_btn.clicked.connect(self.set_action)
         self.fx_btn.clicked.connect(self.fx_action)
-        self.mod_btn.clicked.connect(self.mod_action)
-        self.shd_btn.clicked.connect(self.shd_action)
-        self.rig_btn.clicked.connect(self.rig_action)
 
         self.close_btn.clicked.connect(self.close)
 
@@ -213,3 +206,6 @@ class UI(Qw.QWidget):
         choice = msg_box.exec_()
 
         return choice, Qw.QMessageBox.Ok
+
+    def closeEvent(self, QCloseEvent):
+        self.destroy()

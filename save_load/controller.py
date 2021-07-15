@@ -5,26 +5,25 @@ from Odin.source.core import assets, sets, fx
 
 class Controller(object):
 
-    def __init__(self, save_load, title, ui_instance, root, project):
+    def __init__(self, core, title, ui_instance, root, project, buttons):
 
-        self.save_load = save_load
-        self.ui = UI(self, title, ui_instance)
+        self.core = core
+        self.ui = UI(self, title, buttons, ui_instance)
 
         self.ui.accept_btn.setText(title)
 
+        self.title = title
         self.root = root
         self.project = project
 
         self.asset_type = "CHARA"
-        self.dpt = "MOD"
+        self.dpt = list(buttons.keys())[0]
 
         self.chara_btn = self.ui.chara_btn
         self.props_btn = self.ui.props_btn
         self.set_btn = self.ui.set_btn
         self.fx_btn = self.ui.fx_btn
-        self.mod_btn = self.ui.mod_btn
-        self.shd_btn = self.ui.shd_btn
-        self.rig_btn = self.ui.rig_btn
+
         self.accept_btn = self.ui.accept_btn
         self.close_btn = self.ui.close_btn
 
@@ -34,9 +33,6 @@ class Controller(object):
         self.props_btn.setChecked(False)
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
-        self.mod_btn.setChecked(True)
-        self.shd_btn.setChecked(False)
-        self.rig_btn.setChecked(False)
 
         self.get_assets()
 
@@ -44,8 +40,13 @@ class Controller(object):
 
         self.show()
 
-    def save_load_action(self):
-        self.save_load(self.asset_type, self.asset_name, self.dpt)
+    def accept_action(self):
+        choice, accept_choice = self.ui.message_box(title=self.title,
+                                                    text="You are going to {} the file.".format(self.title.lower()),
+                                                    informative_text="Continue?")
+
+        if choice == accept_choice:
+            self.core(self.asset_type, self.asset_name, self.dpt)
 
     def show(self):
         self.ui.show()
@@ -55,11 +56,8 @@ class Controller(object):
         self.props_btn.clicked.connect(self.props_action)
         self.set_btn.clicked.connect(self.set_action)
         self.fx_btn.clicked.connect(self.fx_action)
-        self.mod_btn.clicked.connect(self.mod_action)
-        self.shd_btn.clicked.connect(self.shd_action)
-        self.rig_btn.clicked.connect(self.rig_action)
 
-        self.accept_btn.clicked.connect(self.save_load_action)
+        self.accept_btn.clicked.connect(self.accept_action)
 
     def chara_action(self):
         self.asset_type = "CHARA"
@@ -76,15 +74,6 @@ class Controller(object):
     def fx_action(self):
         self.dpt = "FX"
         self.get_fx()
-
-    def mod_action(self):
-        self.dpt = "MOD"
-
-    def shd_action(self):
-        self.dpt = "SHD"
-
-    def rig_action(self):
-        self.dpt = "RIG"
 
     def get_assets(self):
         assets_ = assets.find_assets(self.root, self.project, self.asset_type)
