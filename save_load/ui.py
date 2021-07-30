@@ -47,22 +47,20 @@ class UI(Qw.QWidget):
 
         h_layout = Qw.QHBoxLayout()
 
-        self.chara_btn = Qw.QPushButton("CHARA")
-        self.chara_btn.setCheckable(True)
-        self.chara_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
+        self.chara_btn = self.type_btn("CHARA", True)
 
-        self.props_btn = Qw.QPushButton("PROPS")
-        self.props_btn.setCheckable(True)
-        self.props_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
+        self.props_btn = self.type_btn("PROPS", True)
 
-        self.set_btn = Qw.QPushButton("SET")
-        self.set_btn.setCheckable(True)
+        self.set_btn = self.type_btn("SET", True)
         self.set_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
 
-        self.fx_btn = Qw.QPushButton("FX")
-        self.fx_btn.setCheckable(True)
-        self.fx_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
+        self.fx_btn = self.type_btn("FX", True)
         self.fx_btn.setEnabled(False)  # TODO talk with teddy about workflow with cache files
+
+        self.chara_btn.setChecked(True)
+        self.props_btn.setChecked(False)
+        self.set_btn.setChecked(False)
+        self.fx_btn.setChecked(False)
 
         h_layout.addWidget(self.chara_btn)
         h_layout.addWidget(self.props_btn)
@@ -103,6 +101,15 @@ class UI(Qw.QWidget):
         self.btns[0].setChecked(True)
 
         return self.department_layout(self.btns)
+
+    def type_btn(self, text, is_checkable=False):
+        type_btn = Qw.QPushButton()
+        type_btn.setText(text)
+        type_btn.setCheckable(is_checkable)
+        type_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
+        type_btn.setProperty("type", text)
+
+        return type_btn
 
     def dpt_btn(self, title, is_checkable=False):
         dpt_btn = Qw.QPushButton(title)
@@ -165,6 +172,8 @@ class UI(Qw.QWidget):
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
 
+        self.controller.asset_action(self.sender().text())
+
         for btn in self.btns:
             btn.setEnabled(self.buttons[btn.text()]["PROPS"])
 
@@ -173,6 +182,8 @@ class UI(Qw.QWidget):
         self.chara_btn.setChecked(False)
         self.props_btn.setChecked(False)
         self.fx_btn.setChecked(False)
+
+        self.controller.asset_action(self.sender().text())
 
         for btn in self.btns:
             btn.setEnabled(self.buttons[btn.text()]["SET"])
@@ -183,6 +194,8 @@ class UI(Qw.QWidget):
         self.chara_btn.setChecked(False)
         self.props_btn.setChecked(False)
 
+        self.controller.asset_action(self.sender().text())
+
         for btn in self.btns:
             btn.setEnabled(self.buttons[btn.text()]["FX"])
 
@@ -192,7 +205,16 @@ class UI(Qw.QWidget):
         self.set_btn.clicked.connect(self.set_action)
         self.fx_btn.clicked.connect(self.fx_action)
 
+        self.accept_btn.clicked.connect(self.accept_action)
         self.close_btn.clicked.connect(self.close)
+
+    def accept_action(self):
+        choice, accept_choice = self.message_box(title=self.title,
+                                                 text="You are going to {} the file.".format(self.title.lower()),
+                                                 informative_text="Continue?")
+
+        if choice == accept_choice:
+            self.controller.accept_action()
 
     def message_box(self, title, text, informative_text):
 
