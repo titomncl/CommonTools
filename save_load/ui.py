@@ -209,8 +209,9 @@ class UI(Qw.QWidget):
         self.close_btn.clicked.connect(self.close)
 
     def accept_action(self):
-        choice, accept_choice = self.message_box(title=self.title,
-                                                 text="You are going to {} the file.".format(self.title.lower()),
+        choice, accept_choice = self.message_box(title=self.windowTitle(),
+                                                 text="You are going to {} the file.".format(
+                                                     self.windowTitle().lower()),
                                                  informative_text="Continue?")
 
         if choice == accept_choice:
