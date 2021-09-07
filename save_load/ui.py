@@ -52,10 +52,8 @@ class UI(Qw.QWidget):
         self.props_btn = self.type_btn("PROPS", True)
 
         self.set_btn = self.type_btn("SET", True)
-        self.set_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
 
         self.fx_btn = self.type_btn("FX", True)
-        self.fx_btn.setEnabled(False)  # TODO talk with teddy about workflow with cache files
 
         self.chara_btn.setChecked(True)
         self.props_btn.setChecked(False)
@@ -162,6 +160,8 @@ class UI(Qw.QWidget):
         self.props_btn.setChecked(False)
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
+
+        self.controller.asset_action(self.sender().text())
 
         for btn in self.btns:
             btn.setEnabled(self.buttons[btn.text()]["CHARA"])
