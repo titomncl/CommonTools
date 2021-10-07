@@ -1,5 +1,5 @@
-from qtpy import QtWidgets as Qw
-from qtpy import QtCore as Qc
+from PySide2 import QtWidgets as Qw
+from PySide2 import QtCore as Qc
 
 
 class UI(Qw.QWidget):
