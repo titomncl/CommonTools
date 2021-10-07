@@ -1,6 +1,5 @@
 import os
 import sys
-from glob import glob
 
 if sys.version_info > (3,):
     import typing
