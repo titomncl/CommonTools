@@ -1,5 +1,5 @@
-from PySide2 import QtWidgets as Qw
-from PySide2 import QtCore as Qc
+from qtpy import QtWidgets as Qw
+from qtpy import QtCore as Qc
 
 
 class UI(Qw.QWidget):
@@ -10,7 +10,6 @@ class UI(Qw.QWidget):
             controller (Controller):
             parent (Qw.QMainWindow):
         """
-
         Qw.QWidget.__init__(self, parent)
 
         self.setAttribute(Qc.Qt.WidgetAttribute.WA_QuitOnClose)
@@ -22,28 +21,96 @@ class UI(Qw.QWidget):
 
         self.controller = controller
         self.buttons = buttons
+        self.btns_w = {"Assets": [], "Shots": []}
+        self.asset_type = None
 
         self.set_ui()
         self.init_connections()
 
     def set_ui(self):
 
-        self.setFixedSize(400, 250)
+        self.setFixedSize(400, 300)
 
         main_layout = Qw.QVBoxLayout()
         main_layout.setContentsMargins(10, 10, 10, 10)
 
-        main_layout.addLayout(self.type_layout())
-        main_layout.addSpacerItem(Qw.QSpacerItem(200, 4))
-        main_layout.addLayout(self.library_layout())
-        main_layout.addSpacerItem(Qw.QSpacerItem(200, 4))
-        main_layout.addLayout(self.buttons_layout())
+        btn_layout = Qw.QHBoxLayout()
+
+        self.asset_btn = Qw.QPushButton("Assets")
+        self.asset_btn.setCheckable(True)
+        self.asset_btn.setChecked(False)
+
+        self.shots_btn = Qw.QPushButton("Shots")
+        self.shots_btn.setCheckable(True)
+        self.shots_btn.setChecked(False)
+
+        btn_layout.addWidget(self.asset_btn)
+        btn_layout.addWidget(self.shots_btn)
+
+        self.assets_w = self.asset_widget()
+        self.shots_w = self.shot_widget()
+
+        self.stacked_widget = Qw.QStackedWidget()
+        self.stacked_widget.addWidget(self.assets_w)
+        self.stacked_widget.addWidget(self.shots_w)
+        empty_w = Qw.QWidget()
+        self.stacked_widget.addWidget(empty_w)
+        self.stacked_widget.setCurrentWidget(empty_w)
+
+        main_layout.addLayout(btn_layout)
+        main_layout.addWidget(self.stacked_widget)
         main_layout.addSpacerItem(Qw.QSpacerItem(200, 20))
         main_layout.addLayout(self.accept_close_layout())
 
         self.setLayout(main_layout)
 
-    def type_layout(self):
+    def asset_widget(self):
+        a_widget = Qw.QWidget()
+        v_layout = Qw.QVBoxLayout()
+
+        v_layout.addLayout(self.asset_type_layout())
+        v_layout.addSpacerItem(Qw.QSpacerItem(200, 4))
+        v_layout.addLayout(self.asset_library_layout())
+        v_layout.addSpacerItem(Qw.QSpacerItem(200, 4))
+        v_layout.addLayout(self.buttons_layout("Assets"))
+
+        a_widget.setLayout(v_layout)
+        return a_widget
+
+    def shot_widget(self):
+        s_widget = Qw.QWidget()
+        v_layout = Qw.QVBoxLayout()
+
+        v_layout.addLayout(self.seq_shot_layout())
+        v_layout.addSpacerItem(Qw.QSpacerItem(200, 4))
+        v_layout.addLayout(self.buttons_layout("Shots"))
+
+        s_widget.setLayout(v_layout)
+        return s_widget
+
+    def seq_shot_layout(self):
+        v_layout = Qw.QVBoxLayout()
+
+        seq_label = Qw.QLabel("Sequence:")
+
+        self.seq_library_combobox = Qw.QComboBox()
+        self.seq_library_combobox.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Ignored)
+        self.seq_library_combobox.setMinimumSize(0, 25)
+
+        shot_label = Qw.QLabel("Shot:")
+
+        self.shot_library_combobox = Qw.QComboBox()
+        self.shot_library_combobox.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Ignored)
+        self.shot_library_combobox.setMinimumSize(0, 25)
+
+        v_layout.addWidget(seq_label)
+        v_layout.addWidget(self.seq_library_combobox)
+        v_layout.addWidget(shot_label)
+        v_layout.addWidget(self.shot_library_combobox)
+
+        return v_layout
+
+    def asset_type_layout(self):
 
         h_layout = Qw.QHBoxLayout()
 
@@ -55,7 +122,7 @@ class UI(Qw.QWidget):
 
         self.fx_btn = self.type_btn("FX", True)
 
-        self.chara_btn.setChecked(True)
+        self.chara_btn.setChecked(False)
         self.props_btn.setChecked(False)
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
@@ -90,15 +157,13 @@ class UI(Qw.QWidget):
 
         return v_layout
 
-    def buttons_layout(self):
-        self.btns = list()
-        for title in self.buttons:
+    def buttons_layout(self, key):
+
+        for title in self.buttons[key]:
             btn = self.dpt_btn(title, True)
-            self.btns.append(btn)
+            self.btns_w[key].append(btn)
 
-        self.btns[0].setChecked(True)
-
-        return self.department_layout(self.btns)
+        return self.department_layout(self.btns_w[key])
 
     def type_btn(self, text, is_checkable=False):
         type_btn = Qw.QPushButton()
@@ -112,30 +177,28 @@ class UI(Qw.QWidget):
     def dpt_btn(self, title, is_checkable=False):
         dpt_btn = Qw.QPushButton(title)
         dpt_btn.setCheckable(is_checkable)
-        dpt_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Expanding)
+        dpt_btn.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.MinimumExpanding)
         dpt_btn.clicked.connect(self.dpt_btn_action)
 
         return dpt_btn
 
     def dpt_btn_action(self):
-        self.controller.dpt = self.sender().text()
-
-        for btn in self.btns:
+        for btn in self.btns_w[self.asset_or_shot()]:
             if btn != self.sender():
                 btn.setChecked(False)
 
-    def library_layout(self):
+    def asset_library_layout(self):
 
         v_layout = Qw.QVBoxLayout()
 
         label = Qw.QLabel("Asset:")
 
-        self.library_combobox = Qw.QComboBox()
-        self.library_combobox.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Ignored)
-        self.library_combobox.setMinimumSize(0, 25)
+        self.asset_library_combobox = Qw.QComboBox()
+        self.asset_library_combobox.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Ignored)
+        self.asset_library_combobox.setMinimumSize(0, 25)
 
         v_layout.addWidget(label)
-        v_layout.addWidget(self.library_combobox)
+        v_layout.addWidget(self.asset_library_combobox)
 
         return v_layout
 
@@ -160,46 +223,68 @@ class UI(Qw.QWidget):
         self.props_btn.setChecked(False)
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
-
-        self.controller.asset_action(self.sender().text())
-
-        for btn in self.btns:
-            btn.setEnabled(self.buttons[btn.text()]["CHARA"])
+        self.asset_type = self.chara_btn.text()
+        self.list_assets(self.asset_type)
 
     def props_action(self):
         self.props_btn.setChecked(True)
         self.chara_btn.setChecked(False)
         self.set_btn.setChecked(False)
         self.fx_btn.setChecked(False)
-
-        self.controller.asset_action(self.sender().text())
-
-        for btn in self.btns:
-            btn.setEnabled(self.buttons[btn.text()]["PROPS"])
+        self.asset_type = self.props_btn.text()
+        self.list_assets(self.asset_type)
 
     def set_action(self):
         self.set_btn.setChecked(True)
         self.chara_btn.setChecked(False)
         self.props_btn.setChecked(False)
         self.fx_btn.setChecked(False)
-
-        self.controller.asset_action(self.sender().text())
-
-        for btn in self.btns:
-            btn.setEnabled(self.buttons[btn.text()]["SET"])
+        self.asset_type = self.set_btn.text()
+        self.list_assets(self.asset_type)
 
     def fx_action(self):
         self.fx_btn.setChecked(True)
         self.set_btn.setChecked(False)
         self.chara_btn.setChecked(False)
         self.props_btn.setChecked(False)
+        self.asset_type = self.fx_btn.text()
+        self.list_assets(self.asset_type)
 
-        self.controller.asset_action(self.sender().text())
+    def assets_btn_action(self):
+        if not self.asset_btn.isChecked():
+            self.asset_btn.setChecked(True)
+        self.shots_btn.setChecked(False)
+        self.stacked_widget.setCurrentWidget(self.assets_w)
 
-        for btn in self.btns:
-            btn.setEnabled(self.buttons[btn.text()]["FX"])
+    def list_assets(self, asset_type):
+        self.asset_library_combobox.clear()
+        assets = self.controller.list_assets(asset_type)
+
+        if assets:
+            self.asset_library_combobox.addItems(assets)
+
+    def shots_btn_action(self):
+        if not self.shots_btn.isChecked():
+            self.shots_btn.setChecked(True)
+        self.asset_btn.setChecked(False)
+        self.stacked_widget.setCurrentWidget(self.shots_w)
+
+        self.seq_library_combobox.clear()
+        self.shot_library_combobox.clear()
+        sequences = self.controller.list_seq()
+
+        if sequences:
+            self.seq_library_combobox.addItems(sequences)
+
+            shots = self.controller.list_shots(self.controller.get_sequence(self.seq_library_combobox.currentText()))
+
+            if shots:
+                self.shot_library_combobox.addItems(shots)
 
     def init_connections(self):
+        self.asset_btn.clicked.connect(self.assets_btn_action)
+        self.shots_btn.clicked.connect(self.shots_btn_action)
+
         self.chara_btn.clicked.connect(self.chara_action)
         self.props_btn.clicked.connect(self.props_action)
         self.set_btn.clicked.connect(self.set_action)
@@ -215,7 +300,47 @@ class UI(Qw.QWidget):
                                                  informative_text="Continue?")
 
         if choice == accept_choice:
-            self.controller.accept_action()
+            if self.asset_or_shot() == "Assets":
+                asset = self.controller.get_asset(self.asset_library_combobox.currentText(), self.asset_type)
+
+                self.controller.accept_action(asset, self.selected_dpt())
+
+            if self.asset_or_shot() == "Shots":
+                seq = self.controller.get_sequence(self.seq_library_combobox.currentText())
+                shot = self.controller.get_shot(seq, self.shot_library_combobox.currentText())
+
+                self.controller.accept_action(shot, self.selected_dpt())
+
+    def asset_or_shot(self):
+        if self.asset_btn.isChecked():
+            return self.asset_btn.text()
+        elif self.shots_btn.isChecked():
+            return self.shots_btn.text()
+
+    def selected_dpt(self):
+        for btn in self.btns_w[self.asset_or_shot()]:
+            if btn.isChecked():
+                return btn.text()
+
+    # @property
+    # def get_file_info(self):
+
+        # test = {
+        #     "Assets":
+        #         (
+        #             self.asset_type,
+        #             self.asset_library_combobox.currentText(),
+        #             self.selected_dpt()
+        #         ),
+        #     "Shots":
+        #         (
+        #             self.controller.get_sequence(self.seq_library_combobox.currentText()),
+        #             self.shot_library_combobox.currentText(),
+        #             self.selected_dpt()
+        #         )
+        # }
+        #
+        # return test
 
     def message_box(self, title, text, informative_text):
 
