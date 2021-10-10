@@ -124,9 +124,11 @@ class UI(Qw.QWidget):
 
         self.export_btn = Qw.QPushButton()
         self.export_btn.setText("Export")
+        self.export_btn.clicked.connect(self.export_action)
 
         self.close_btn = Qw.QPushButton()
         self.close_btn.setText("Close")
+        self.close_btn.clicked.connect(self.close)
 
         h_layout.addWidget(self.export_btn)
         h_layout.addWidget(self.close_btn)
