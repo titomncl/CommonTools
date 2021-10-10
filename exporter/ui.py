@@ -183,8 +183,6 @@ class UI(Qw.QWidget):
         if self.lock_frame_range.isChecked():
             self.start_frame.setEnabled(False)
             self.end_frame.setEnabled(False)
-            self.start_frame.setValue(1)
-            self.end_frame.setValue(1)
         else:
             self.start_frame.setEnabled(True)
             self.end_frame.setEnabled(True)
