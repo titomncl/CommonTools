@@ -285,11 +285,6 @@ class UI(Qw.QWidget):
         if sequences:
             self.seq_library_combobox.addItems(sequences)
 
-            shots = self.controller.list_shots(self.controller.get_sequence(self.seq_library_combobox.currentText()))
-
-            if shots:
-                self.shot_library_combobox.addItems(shots)
-
     def init_connections(self):
         self.asset_btn.clicked.connect(self.assets_btn_action)
         self.shots_btn.clicked.connect(self.shots_btn_action)
