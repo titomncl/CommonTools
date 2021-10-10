@@ -92,11 +92,15 @@ class UI(Qw.QWidget):
         self.start_frame = Qw.QSpinBox()
         self.start_frame.setValue(1)
         self.start_frame.setEnabled(False)
+        self.start_frame.setMinimum(0)
+        self.start_frame.setMaximum(10000)
 
         end_label = Qw.QLabel("End frame:")
         self.end_frame = Qw.QSpinBox()
         self.end_frame.setValue(1)
         self.end_frame.setEnabled(False)
+        self.end_frame.setMinimum(0)
+        self.end_frame.setMaximum(10000)
 
         self.lock_frame_range = Qw.QPushButton("Lock")
         self.lock_frame_range.setCheckable(True)
