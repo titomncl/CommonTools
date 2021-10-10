@@ -96,6 +96,7 @@ class UI(Qw.QWidget):
         self.seq_library_combobox = Qw.QComboBox()
         self.seq_library_combobox.setSizePolicy(Qw.QSizePolicy.Expanding, Qw.QSizePolicy.Ignored)
         self.seq_library_combobox.setMinimumSize(0, 25)
+        self.seq_library_combobox.currentIndexChanged.connect(self.list_shots)
 
         shot_label = Qw.QLabel("Shot:")
 
@@ -262,6 +263,14 @@ class UI(Qw.QWidget):
 
         if assets:
             self.asset_library_combobox.addItems(assets)
+
+    def list_shots(self):
+        self.shot_library_combobox.clear()
+        if self.seq_library_combobox.currentText():
+            shots = self.controller.list_shots(self.controller.get_sequence(self.seq_library_combobox.currentText()))
+
+            if shots:
+                self.shot_library_combobox.addItems(shots)
 
     def shots_btn_action(self):
         if not self.shots_btn.isChecked():
