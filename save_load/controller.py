@@ -52,3 +52,7 @@ class Controller(object):
     def accept_action(self, item, dpt):
         # type: (Union[Asset, Shot], str) -> None
         self.core(item, dpt)
+        os.environ["ITEM_PATH"] = item.paths["PATH"]
+        os.environ["ITEM_PUBLISH"] = item.paths["PUBLISH"]
+        os.environ["ITEM_NAME"] = item.name
+        os.environ["ITEM_TASK"] = dpt
