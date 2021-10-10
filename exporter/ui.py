@@ -168,5 +168,21 @@ class UI(Qw.QWidget):
             self.start_frame.setEnabled(True)
             self.end_frame.setEnabled(True)
 
+    def export_action(self):
+        if self.asset_btn.isChecked():
+            self.controller.export_asset(self.export_hd.isChecked(), self.only_hd.isChecked())
+        elif self.anim_btn.isChecked():
+            if self.start_frame.value() > self.end_frame.value():
+                raise RuntimeError("Start frame can't be greater than end frame")
+            else:
+                self.controller.export_anim(self.start_frame.value(), self.end_frame.value())
+        elif self.camera_btn.isChecked():
+            if self.start_frame.value() > self.end_frame.value():
+                raise RuntimeError("Start frame can't be greater than end frame")
+            else:
+                self.controller.export_camera(self.start_frame.value(), self.end_frame.value(), "CAMERA")
+        else:
+            raise RuntimeError("No type selected")
+
     def closeEvent(self, QCloseEvent):
         self.destroy()
