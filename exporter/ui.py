@@ -133,11 +133,20 @@ class UI(Qw.QWidget):
 
         return h_layout
 
+    def set_frame_range(self, start, end):
+        self.start_frame.setValue(start)
+        self.end_frame.setValue(end)
+
     def asset_action(self):
         if not self.asset_btn.isChecked():
             self.asset_btn.setChecked(True)
         self.anim_btn.setChecked(False)
         self.camera_btn.setChecked(False)
+
+        self.export_hd.setEnabled(True)
+        self.lock_frame_range.setEnabled(False)
+
+        self.set_frame_range(1, 1)
 
     def anim_action(self):
         if not self.anim_btn.isChecked():
@@ -145,11 +154,21 @@ class UI(Qw.QWidget):
         self.asset_btn.setChecked(False)
         self.camera_btn.setChecked(False)
 
+        self.export_hd.setEnabled(False)
+        self.lock_frame_range.setEnabled(True)
+
+        self.set_frame_range(*self.controller.get_frame_range())
+
     def camera_action(self):
         if not self.camera_btn.isChecked():
             self.camera_btn.setChecked(True)
         self.asset_btn.setChecked(False)
         self.anim_btn.setChecked(False)
+
+        self.export_hd.setEnabled(False)
+        self.lock_frame_range.setEnabled(True)
+
+        self.set_frame_range(*self.controller.get_frame_range())
 
     def export_hd_action(self):
         if self.export_hd.isChecked():
