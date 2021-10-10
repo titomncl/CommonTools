@@ -26,7 +26,7 @@ class UI(Qw.QWidget):
 
     def set_ui(self):
 
-        self.setFixedSize(400, 250)
+        self.setFixedSize(550, 250)
 
         main_layout = Qw.QVBoxLayout()
         main_layout.setContentsMargins(10, 10, 10, 10)
