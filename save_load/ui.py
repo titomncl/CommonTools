@@ -326,26 +326,6 @@ class UI(Qw.QWidget):
             if btn.isChecked():
                 return btn.text()
 
-    # @property
-    # def get_file_info(self):
-
-        # test = {
-        #     "Assets":
-        #         (
-        #             self.asset_type,
-        #             self.asset_library_combobox.currentText(),
-        #             self.selected_dpt()
-        #         ),
-        #     "Shots":
-        #         (
-        #             self.controller.get_sequence(self.seq_library_combobox.currentText()),
-        #             self.shot_library_combobox.currentText(),
-        #             self.selected_dpt()
-        #         )
-        # }
-        #
-        # return test
-
     def message_box(self, title, text, informative_text):
 
         msg_box = Qw.QMessageBox(self)
